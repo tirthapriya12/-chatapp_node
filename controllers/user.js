@@ -1,5 +1,5 @@
-let db = require('../utils/DBHandler');
-let User = require('../models/User');
+// const db = require('../utils/DBHandler');
+const { User, UserModel } = require('../models/User');
 class UserController {
 
     userSignUp(req, res, next) {
@@ -24,19 +24,19 @@ class UserController {
                 errors = result.array().map(function (elem) {
                     return elem.msg;
                 });
-                res.end(JSON.stringify(errors));
+                res.status(201).send(JSON.stringify(errors));
             }
         });
     }
 
     createUser(reqBody, callback) {
-        
+
         let { name, email, password, phone } = reqBody;
-        let user = new User(name,email,password,phone);
-        db.insertDocument('User', user, (res) => {
-            console.log(res);
-            if (callback) callback(res);
-        })
+        let user = new User(name, email, password, phone);
+        // db.insertDocument('User', user, (res) => {
+        //     console.log(res);
+        //     if (callback) callback(res);
+        // })
     }
 }
 

@@ -1,66 +1,61 @@
 const express = require('express'),
     http = require('http'),
     socketio = require('socket.io'),
-    bodyParser = require('body-parser'),
     path = require('path'),
     cors = require('cors'),
     routes = require('./routes'),
-    dbHandler = require('./utils/DBHandler'),
-    User = require('./models/User');
-    const expressValidator = require('express-validator');
+    { connectDB } = require('./utils/db_handler'),
+    expressValidator = require('express-validator'),
+    dotenv = require('dotenv'),
+    morgan = require('morgan');
 
 
-class Server {
 
-    constructor() {
-        this.port = process.env.port || 4000;
-        this.app = express();
-        this.server = http.Server(this.app);
-        this.socket = socketio(this.server);
-        this.host = 'localhost';
-    }
 
-    appConfig() {
-        this.app.use(express.static(path.join(__dirname, '/')));
-        this.app.use(
-            bodyParser.json()
-        );
-        this.app.use(bodyParser.urlencoded({ extended: false }));
-        this.app.use(
-            cors()
-        );
-        this.app.use(expressValidator());
-        // new config(this.app);
-    }
+const port = process.env.port || 4000;
+const app = express();
+const server = http.Server(app);
+const socket = socketio(server);
 
-    /* Including app Routes starts*/
-    includeRoutes() {
-        routes.initRoutes(this.app);
 
-        //manage socket connection setup
-        this.socket.on('connection', (socket) => {
-            socket.emit("connected", { connected: true });
-            console.log(socket == this.socket);
-        })
-    }
 
-    /**inits a handler to connect to db */
-    initDbHandler() {
-
-        dbHandler.connectToDB();
-
-    }
-
-    /* Including app Routes ends*/
-    execute() {
-        this.appConfig();
-        this.includeRoutes();
-        this.initDbHandler();
-        this.server.listen(this.port, () => {
-            console.log(`Listening on http://${this.host}:${this.port}`);
-        });
-    }
+app.use(express.static(path.join(__dirname, '/')));
+app.use(
+    express.json()
+);
+app.use(express.urlencoded({ extended: false }));
+app.use(
+    cors()
+);
+app.use(expressValidator());
+// Logging
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'))
 }
+// Load config
+dotenv.config({ path: './config/config.env' })
 
-const server = new Server();
-server.execute();
+
+/* Including app Routes starts*/
+
+routes.initRoutes(app);
+
+//manage socket connection setup
+socket.on('connection', (socket) => {
+    socket.emit("connected", { connected: true });
+    console.log(socket == socket);
+})
+
+
+/**inits a handler to connect to db */
+
+
+connectDB();
+
+/* Including app Routes ends*/
+
+server.listen(port, () => {
+    console.log(`Listening on port:${port}`);
+});
+
+

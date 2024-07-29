@@ -1,10 +1,11 @@
 {
-  "name": "swipe_it_serve",
+  "name": "chat-app",
   "version": "1.0.0",
   "description": "serves Swipe_it messenger",
   "main": "index.js",
   "scripts": {
-    "start":"node index",
+    "start": "cross-env NODE_ENV=production node index",
+    "dev": "cross-env NODE_ENV=development nodemon index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Tirthapriya Banerjee",
@@ -13,13 +14,18 @@
     "async": "^2.1.5",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
+    "dotenv": "^10.0.0",
     "express": "*",
     "express-validator": "^5.3.1",
     "mongodb": "^2.2.19",
+    "mongoose": "^6.1.4",
+    "morgan": "^1.10.0",
     "socket.io": "*"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "express": "^4.16.3",
+    "nodemon": "^2.0.15",
     "socket.io": "^2.0.4"
   }
 }

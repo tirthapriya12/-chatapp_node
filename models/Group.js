@@ -1,9 +1,28 @@
+const mongoose = require('mongoose');
+
+const GroupSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        trim: true
+    },
+    _id: {
+        type: mongoose.Schema.Types.ObjectId
+    },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
+    admins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    }
+});
+
 class Group {
 
-    constructor(name, id, users) {
+    constructor(name, id, users, admins) {
         this.name = name;
         this._id = id;
         this.users = users;
+        this.admins = admins;
     }
 
     /**Adds user to {this} group */
@@ -23,11 +42,25 @@ class Group {
     }
 
     /** return group name of {this}*/
-    getGroupName() {
+    get groupName() {
         return this.name;
     }
-    getUsers() {
+
+    set groupName(name) {
+        this.name = name;
+    }
+    get users() {
         return this.users;
     }
+    get admins() {
+        return this.admins;
+    }
 }
-module.exports = Group;
+
+GroupSchema.loadClass(Group);
+
+
+module.exports = {
+    _Group: Group,
+    Group: new mongoose.model('Group', GroupSchema)
+};
